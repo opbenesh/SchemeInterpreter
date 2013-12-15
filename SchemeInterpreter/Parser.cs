@@ -30,22 +30,24 @@ namespace SchemeInterpreter
 
         private static Expression ParseSExpression(SExpression sExpression)
         {
-            var car = sExpression.Tokens.First();
-            if (sExpression.Tokens.First() is SimpleToken)
-            {
-                var f
-            }
-            var expressions = sExpression.Tokens.Select(ct=>ParseExpression(ct)).ToList();
+            var expressions = sExpression.Tokens.Select(ct => ParseExpression(ct)).ToArray() ;
+            if (expressions.First() is SpecialFormToken)
+                return ParseSpecialForm(expressions.First(), expressions.Skip(1).ToList());
             return new Application(expressions);
         }
 
-        private static Value ParseSimpleToken(SimpleToken simpleToken)
+        private static Expression ParseSpecialForm(Expression expression, List<Expression> list)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static Expression ParseSimpleToken(SimpleToken simpleToken)
         {
             Value value;
             foreach (var parser in ValueParsers)
                 if (parser.TryParse(simpleToken.Value, out value))
                     return value;
-            throw new ParseException(simpleToken.Value, "Unknown token");
+            return new Variable(simpleToken.Value);
         }
         private static CapturedToken CaptureToken(string expression)
         {
@@ -116,27 +118,28 @@ namespace SchemeInterpreter
         }
         private static SExpression CaptureSExpression(string str, ref int index)
         {
-            List<CapturedToken> tokens = new List<CapturedToken>();
             index++;
-            int parens=1;
-            int init=index;
-            for (; parens > 0 && !char.IsWhiteSpace(str[index]); index++)
+            int parens = 1;
+            int init = index;
+            for (; parens > 0 && index < str.Length; index++)
             {
                 if (str[index] == '(')
                     parens++;
                 else if (str[index] == ')')
                 {
                     if (parens == 0)
-                        throw new ParseException(SliceString(str,init, index), "Unmatched ')'");
+                        throw new ParseException(SliceString(str, init, index), "Unmatched ')'");
                     parens--;
                 }
             }
-            return new SExpression(ExtractTokens(SliceString(str, init, index-1)));
+            if (parens > 0)
+                throw new ParseException(SliceString(str, init, index-1), "Unmatched '('");
+            return new SExpression(ExtractTokens(SliceString(str, init, index - 1)));
         }
 
         private static string SliceString(string str, int start, int end)
         {
-            return str.Substring(start, end - start + 1);
+            return str.Substring(start, end - start);
         }
     }
 

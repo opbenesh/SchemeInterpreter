@@ -18,5 +18,16 @@ namespace SchemeInterpreter
             }
             return result;
         }
+        public static List<T> ToList<T>(Pair list) where T : Expression
+        {
+            var result = new List<T>();
+            for (Pair current = list; current!=null ; current=current.Cdr as Pair)
+            {
+                if (!(current.Car is T))
+                    throw new TypeMismatchException(current.Car, typeof(T));
+                result.Add(current.Car as T);
+            }
+            return result;
+        }
     }
 }

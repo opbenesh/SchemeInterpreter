@@ -19,40 +19,39 @@ namespace SchemeInterpreter
         public Value Apply(List<Expression> args)
         {
             AssertProperArgsList(args);
-            var formal = _procedure.FormalArgs;
             var evaled = args.Select(e => e.Eval(_environment)).ToList();
             var newEnv = new Environment(_environment);
             newEnv[_procedureName] = _procedure;
-            AddArgsToEnvironment(formal, evaled, newEnv);
+            if(_procedure is UserDefinedProcedure)
+                AddArgsToEnvironment((_procedure as UserDefinedProcedure).FormalArgs, evaled, newEnv);
             return _procedure.Apply(evaled, newEnv);
         }
 
-        private void AddArgsToEnvironment(List<string> formal, List<Value> evaled, Environment newEnv)
+        private void AddArgsToEnvironment(List<string> formal, List<Value> evaled, Environment environment)
         {
             if (formal.Count == 0)
                 return;
             for (int i = 0; i < formal.Count - 1; i++)
             {
-                newEnv[formal[i]] = evaled[i];
+                environment[formal[i]] = evaled[i];
             }
             if (_procedure.IsLastArgList)
-                newEnv[formal.Last()] = Util.ToSchemeList(evaled.Skip(formal.Count - 1));
+                environment[formal.Last()] = Util.ToSchemeList(evaled.Skip(formal.Count - 1));
             else
-                newEnv[formal.Last()] = evaled.Last();
+                environment[formal.Last()] = evaled.Last();
         }
 
         private void AssertProperArgsList(List<Expression> actual)
         {
-            var formal = _procedure.FormalArgs;
             if (!_procedure.IsLastArgList)
             {
-                if (formal.Count != actual.Count)
-                    throw new InvalidArgumentCountException(formal.Count, actual.Count);
+                if (_procedure.ArgumentCount != actual.Count)
+                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, actual.Count);
             }
             else
             {
-                if (actual.Count < formal.Count - 1)
-                    throw new InvalidArgumentCountException(formal.Count, actual.Count);
+                if (actual.Count < _procedure.ArgumentCount - 1)
+                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, actual.Count);
             }
         }
     }

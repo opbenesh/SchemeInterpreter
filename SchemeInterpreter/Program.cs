@@ -9,6 +9,8 @@ namespace SchemeInterpreter
     {
         static void Main(string[] args)
         {
+            var runtime = new Runtime();
+            runtime.Repl();
         }
     }
 }
