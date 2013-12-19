@@ -20,10 +20,11 @@ namespace SchemeInterpreter
     {
         public List<string> FormalArgs { get; private set; }
         public Expression Body { get; private set; }
-        public UserDefinedProcedure(Expression body, bool isLastArgList, params string[] formalArgs)
-            :base(isLastArgList,formalArgs.Length)
+        public UserDefinedProcedure(Expression body, bool isLastArgList,List<string> formalArgs)
+            :base(isLastArgList,formalArgs.Count)
         {
             this.Body = body;
+            this.FormalArgs = formalArgs.ToList();
         }
 
         public override Value Apply(List<Value> args, Environment environment)

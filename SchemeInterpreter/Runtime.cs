@@ -7,11 +7,20 @@ namespace SchemeInterpreter
 {
     class Runtime
     {
-        private Environment _environment;
+        internal Environment _environment;
         private const string PROMPT = "> ";
-        public void Repl()
+        public Runtime()
         {
             Initialize();
+        }
+        public Value Execute(string input)
+        {
+            var expr = Parser.ParseExpression(input);
+            var res = expr.Eval(_environment);
+            return res;
+        }
+        public void Repl()
+        {
             while (true)
             {
                 Console.Write(PROMPT);
@@ -24,8 +33,7 @@ namespace SchemeInterpreter
                 //}
                 try
                 {
-                    var expr = Parser.ParseExpression(input);
-                    var res = expr.Eval(_environment);
+                    var res = Execute(input);
                     WriteInStyle(res);
                     Console.WriteLine();
                 }
@@ -58,7 +66,7 @@ namespace SchemeInterpreter
         {
             this._environment = new Environment();
             foreach (var primitiveProcedure in Predefined.PrimitiveProcedures)
-                _environment[primitiveProcedure.Name] = new Closure(_environment,primitiveProcedure,primitiveProcedure.Name);
+                _environment[primitiveProcedure.Name] = new Closure(_environment,primitiveProcedure);
         }
     }
 }

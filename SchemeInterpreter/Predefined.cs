@@ -9,7 +9,7 @@ namespace SchemeInterpreter
     {
         public static List<PrimitiveProcedure> PrimitiveProcedures = new List<PrimitiveProcedure>
         {
-            new PrimitiveProcedure("+",vl=>new Integer() {Value=vl.Sum(v=>v.SafeCastAs<Integer>().Value)},1,true)
+            new PrimitiveProcedure("+",vl=>new Integer(){Value=vl.Sum(v=>v.SafeCastAs<Integer>().Value)},1,true)
         };
 
     

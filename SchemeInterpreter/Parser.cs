@@ -14,6 +14,11 @@ namespace SchemeInterpreter
             new StringParser()
         };
 
+        private static List<string> SpecialForms = new List<string>()
+        {
+            "if","define"
+        };
+
         public static Expression ParseExpression(string expression)
         {
             expression = expression.Trim();
@@ -32,22 +37,41 @@ namespace SchemeInterpreter
         {
             var expressions = sExpression.Tokens.Select(ct => ParseExpression(ct)).ToArray() ;
             if (expressions.First() is SpecialFormToken)
-                return ParseSpecialForm(expressions.First(), expressions.Skip(1).ToList());
+                return ParseSpecialForm((expressions.First() as SpecialFormToken).Token, expressions.Skip(1).ToList(), sExpression);
             return new Application(expressions);
         }
 
-        private static Expression ParseSpecialForm(Expression expression, List<Expression> list)
+        private static Expression ParseSpecialForm(string specialForm, List<Expression> expressions, SExpression sExpression)
         {
-            throw new NotImplementedException();
+            if(specialForm=="if")
+            {
+                if (expressions.Count != 3)
+                    throw new ParseException(sExpression.ToString(), "An \"if\" expression must contains exactly 3 arguments");
+                return new If(expressions[0], expressions[1], expressions[2]);
+            }
+            if(specialForm=="define")
+            {
+                if (expressions.Count != 2)
+                    throw new ParseException(sExpression.ToString(), "A \"define\" expression must contains exactly 2 arguments");
+                if (!(expressions[0] is Variable || expressions[0] is Application))
+                    throw new ParseException(sExpression.ToString(), "A \"define\" expression's first part must be either a string or a list");
+
+                return new Define(expressions[0], expressions[1]);
+
+            }
+            throw new InternalException(string.Format("Illegal special form {0}",specialForm));
         }
 
         private static Expression ParseSimpleToken(SimpleToken simpleToken)
         {
+            var text = simpleToken.Value;
             Value value;
+            if (SpecialForms.Exists(s => s == text))
+                return new SpecialFormToken(text);
             foreach (var parser in ValueParsers)
-                if (parser.TryParse(simpleToken.Value, out value))
+                if (parser.TryParse(text, out value))
                     return value;
-            return new Variable(simpleToken.Value);
+            return new Variable(text);
         }
         private static CapturedToken CaptureToken(string expression)
         {
@@ -102,7 +126,14 @@ namespace SchemeInterpreter
 
         private static CapturedToken CaptureSimpleToken(string str, ref int i)
         {
-            return new SimpleToken(new string(str.Skip(i).TakeWhile(c => !char.IsWhiteSpace(c)).ToArray()));
+            var sb = new StringBuilder();
+            for (; i < str.Length; i++)
+            {
+                if (char.IsWhiteSpace(str[i]))
+                    break;
+                sb.Append(str[i]);
+            }
+            return new SimpleToken(sb.ToString());
         }
 
         private static CapturedToken CaptureStringToken(string str, ref int index)
@@ -152,6 +183,10 @@ namespace SchemeInterpreter
         {
             this.Value = str;
         }
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 
     class SExpression : CapturedToken
@@ -160,6 +195,10 @@ namespace SchemeInterpreter
         public SExpression(CapturedToken[] tokens)
         {
             this.Tokens = tokens;
+        }
+        public override string ToString()
+        {
+            return string.Format("({0})", string.Join<CapturedToken>(" ", Tokens));
         }
     }
 }

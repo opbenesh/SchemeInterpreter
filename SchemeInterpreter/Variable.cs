@@ -7,14 +7,19 @@ namespace SchemeInterpreter
 {
     class Variable:Expression
     {
-        private string _name;
+        public string Name { get; private set; }
         public Variable(string name)
         {
-            _name = name;
+            Name = name;
         }
         public override Value Eval(Environment environment)
         {
-            return environment[_name];
+            return environment[Name];
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

@@ -5,6 +5,12 @@ using System.Text;
 
 namespace SchemeInterpreter
 {
+    public class InternalException : Exception
+    {
+        public InternalException() { }
+        public InternalException(string message) : base(message) { }
+        public InternalException(string message, Exception inner) : base(message, inner) { }
+    }
     class InterpreterException : ApplicationException
     {
         public InterpreterException() : base() { }
@@ -33,6 +39,13 @@ namespace SchemeInterpreter
         protected EvaluationException(string message) : base(message) { }
         public EvaluationException(Expression expr, string error)
             : base(string.Format("Could not evaluate expression \"{0}\": {1}", expr, error))
+        { }
+    }
+    class SpecialFormException : InterpreterException
+    {
+        protected SpecialFormException(string message) : base(message) { }
+        public SpecialFormException(string specialForm, string error)
+            : base(string.Format("Could not evaluate special form \"{0}\": {1}", specialForm, error))
         { }
     }
     class TypeMismatchException : Exception

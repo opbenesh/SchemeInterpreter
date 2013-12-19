@@ -7,7 +7,7 @@ namespace SchemeInterpreter
 {
     static class Util
     {
-        public static Pair ToSchemeList<T>(IEnumerable<T> list) where T : Expression
+        public static Pair ToSchemeList(IEnumerable<Expression> list)
         {
             var result = new Pair(null, null);
             var current = result;

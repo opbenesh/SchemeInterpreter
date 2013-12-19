@@ -9,19 +9,17 @@ namespace SchemeInterpreter
     {
         private Environment _environment;
         private Procedure _procedure;
-        private string _procedureName;
-        public Closure(Environment environment, Procedure procedure, string procedureName)
+        public Closure(Environment environment, Procedure procedure)
         {
             this._environment = environment;
             this._procedure = procedure;
-            this._procedureName = procedureName;
         }
         public Value Apply(List<Expression> args)
         {
             AssertProperArgsList(args);
             var evaled = args.Select(e => e.Eval(_environment)).ToList();
             var newEnv = new Environment(_environment);
-            newEnv[_procedureName] = _procedure;
+            //newEnv[_procedureName] = _procedure;
             if(_procedure is UserDefinedProcedure)
                 AddArgsToEnvironment((_procedure as UserDefinedProcedure).FormalArgs, evaled, newEnv);
             return _procedure.Apply(evaled, newEnv);

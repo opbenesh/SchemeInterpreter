@@ -12,6 +12,14 @@ namespace SchemeInterpreter
         {
             return Value.ToString();
         }
+        public override bool Equals(object obj)
+        {
+            return obj is WrapperValue<T> && this.Value.Equals((obj as WrapperValue<T>).Value);
+        }
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
     class Integer : WrapperValue<int> { }
     class Boolean : WrapperValue<bool> { }

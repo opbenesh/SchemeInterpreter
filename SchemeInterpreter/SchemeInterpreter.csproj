@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Closure.cs" />
+    <Compile Include="Define.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Expression.cs" />
@@ -56,7 +57,7 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SpecialForm.cs" />
     <Compile Include="SpecialFormToken.cs" />
-    <Compile Include="TypeParsers.cs" />
+    <Compile Include="ValueParser.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Value.cs" />
     <Compile Include="Variable.cs" />
