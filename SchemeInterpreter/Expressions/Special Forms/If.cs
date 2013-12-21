@@ -20,7 +20,7 @@ namespace SchemeInterpreter
         public override Value Eval(Environment environment)
         {
             var evaledCondition = _condition.Eval(environment);
-            if (evaledCondition is Boolean && !(evaledCondition as Boolean).Value)
+            if (evaledCondition is PrimitiveWrapper<bool> && !(evaledCondition as PrimitiveWrapper<bool>).Value)
                 return _falseBranch.Eval(environment);
             return _trueBranch.Eval(environment);
         }

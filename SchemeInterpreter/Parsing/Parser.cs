@@ -37,7 +37,9 @@ namespace SchemeInterpreter
 
         private static Expression ParseSExpression(SExpression sExpression)
         {
-            var expressions = sExpression.Tokens.Select(ct => ParseExpression(ct)).ToArray() ;
+            if (sExpression.Tokens.Length == 0)
+                throw new ParseException(sExpression.ToString(), "the empty application () is an illegal expression");
+            var expressions = sExpression.Tokens.Select(ct => ParseExpression(ct)).ToArray();
             if (expressions.First() is SpecialFormToken)
                 return ParseSpecialForm((expressions.First() as SpecialFormToken).Token, expressions.Skip(1).ToList(), sExpression);
             return new Application(expressions);
@@ -109,12 +111,12 @@ namespace SchemeInterpreter
         }
         public static bool IsInputComplete(string input)
         {
-            throw new NotImplementedException();
+            return input.Count(c => c == '(') == input.Count(c => c == ')');
         }
 
         public static int CalcPadding(string input)
         {
-            throw new NotImplementedException();
+            return 0;
         }
         private static string NormalizeString(string str)
         {

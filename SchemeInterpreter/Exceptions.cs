@@ -14,7 +14,8 @@ namespace SchemeInterpreter
     class InterpreterException : ApplicationException
     {
         public InterpreterException() : base() { }
-        public InterpreterException(string message) : base(message) { } 
+        public InterpreterException(string message) : base(message) { }
+        public InterpreterException(string message,Exception ex) : base(message,ex) { } 
     }
     class InvalidArgumentCountException:Exception
     {

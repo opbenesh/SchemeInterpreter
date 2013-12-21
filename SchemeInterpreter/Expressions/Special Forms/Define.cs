@@ -27,7 +27,7 @@ namespace SchemeInterpreter
                 DefineVariable(environment);
             else if (DefinedName is Application)
                 DefineProcedure(environment);
-            return new Boolean(){Value=false};
+            return new PrimitiveWrapper<bool>() { Value = false };
         }
 
         private void DefineProcedure(Environment environment)

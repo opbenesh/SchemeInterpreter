@@ -18,7 +18,7 @@ namespace SchemeInterpreter
             int res;
             if (int.TryParse(str, out res))
             {
-                value = new Integer() { Value = res };
+                value = new PrimitiveWrapper<int>() { Value = res };
                 return true;
             }
             return false;
@@ -41,7 +41,7 @@ namespace SchemeInterpreter
             }
             if (i == str.Length)
                 throw new ParseException(str, "A string must end in '\"'");
-            value = new String() { Value = str.Substring(1, str.Length - 2) };
+            value = new PrimitiveWrapper<string>() { Value = str.Substring(1, str.Length - 2) };
             return true;
         }
     }
@@ -52,12 +52,12 @@ namespace SchemeInterpreter
             value = null;
             if (str == "#t")
             {
-                value = new Boolean() { Value = true };
+                value = new PrimitiveWrapper<bool>() { Value = true };
                 return true;
             }
             if (str == "#f")
             {
-                value = new Boolean() { Value = false };
+                value = new PrimitiveWrapper<bool>() { Value = false };
                 return true;
             }
             return false;

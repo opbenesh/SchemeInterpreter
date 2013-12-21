@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SchemeInterpreter
 {
-    abstract class WrapperValue<T>:Value
+    class PrimitiveWrapper<T>:Value
     {
         public T Value { get; set; }
         public override string ToString()
@@ -14,14 +14,11 @@ namespace SchemeInterpreter
         }
         public override bool Equals(object obj)
         {
-            return obj is WrapperValue<T> && this.Value.Equals((obj as WrapperValue<T>).Value);
+            return obj is PrimitiveWrapper<T> && this.Value.Equals((obj as PrimitiveWrapper<T>).Value);
         }
         public override int GetHashCode()
         {
             return Value.GetHashCode();
         }
     }
-    class Integer : WrapperValue<int> { }
-    class Boolean : WrapperValue<bool> { }
-    class String : WrapperValue<string> { }
 }

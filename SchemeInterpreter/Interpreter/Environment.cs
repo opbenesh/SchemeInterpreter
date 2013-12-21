@@ -7,12 +7,14 @@ namespace SchemeInterpreter
 {
     class Environment
     {
+        public bool IsTopLevel { get; set; }
         private Environment _base;
         private Dictionary<string, Value> _inner;
         public Environment(Environment baseEnv)
         {
             _base = baseEnv;
             _inner = new Dictionary<string, Value>();
+            this.IsTopLevel = false;
         }
         public Environment():this(null)
         {
@@ -27,7 +29,29 @@ namespace SchemeInterpreter
                     return _base[name];
                 throw new UndefinedVariableException(name);
             }
-            set { _inner[name] = value; }
+            set
+            {
+                MutateEnvironment(name, value);
+            }
+        }
+
+        protected virtual void MutateEnvironment(string name, Value value)
+        {
+            _inner[name] = value; 
+        }
+    }
+
+    class TopLevelEnvironment:Environment
+    {
+        private Environment environment;
+
+        public TopLevelEnvironment(Environment environment)
+            :base(environment)
+        {
+        }
+        protected override void MutateEnvironment(string name, Value value)
+        {
+            throw new InterpreterException(string.Format("Top-level entry {0} is immutable", name));
         }
     }
 }
