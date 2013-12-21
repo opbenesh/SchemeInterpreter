@@ -41,27 +41,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application.cs" />
-    <Compile Include="Closure.cs" />
-    <Compile Include="Define.cs" />
-    <Compile Include="Environment.cs" />
+    <Compile Include="Expressions\Application.cs" />
+    <Compile Include="Expressions\Special Forms\Lambda.cs" />
+    <Compile Include="Expressions\Special Forms\Let.cs" />
+    <Compile Include="Expressions\Values\Closure.cs" />
+    <Compile Include="Expressions\Special Forms\Define.cs" />
+    <Compile Include="Interpreter\Environment.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Expression.cs" />
-    <Compile Include="If.cs" />
-    <Compile Include="Pair.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Predefined.cs" />
-    <Compile Include="Procedure.cs" />
+    <Compile Include="Expressions\Expression.cs" />
+    <Compile Include="Expressions\Special Forms\If.cs" />
+    <Compile Include="Expressions\Values\Pair.cs" />
+    <Compile Include="Parsing\Lexer.cs" />
+    <Compile Include="Parsing\Parser.cs" />
+    <Compile Include="Interpreter\Predefined.cs" />
+    <Compile Include="Expressions\Values\Procedure.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runtime.cs" />
-    <Compile Include="SpecialForm.cs" />
-    <Compile Include="SpecialFormToken.cs" />
+    <Compile Include="Interpreter\Runtime.cs" />
+    <Compile Include="Expressions\Special Forms\SpecialForm.cs" />
+    <Compile Include="Expressions\SpecialFormToken.cs" />
     <Compile Include="ValueParser.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="Value.cs" />
-    <Compile Include="Variable.cs" />
-    <Compile Include="WrapperValue.cs" />
+    <Compile Include="Expressions\Values\Value.cs" />
+    <Compile Include="Expressions\Variable.cs" />
+    <Compile Include="Expressions\Values\WrapperValue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scheme\init.scm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,5 +22,16 @@ namespace SchemeInterpreter
             Cdr = Cdr.Eval(environment);
             return this;
         }
+        public override string ToString()
+        {
+            if (IsProperList())
+                return string.Format("({0})", string.Join<Value>(" ", Util.ToList<Value>(this)));
+            return string.Format("({0} . {1}", this.Car, this.Cdr);
+        }
+
+        private bool IsProperList()
+        {
+            return Cdr == null || (Cdr is Pair && (Cdr as Pair).IsProperList());
+        }
     }
 }

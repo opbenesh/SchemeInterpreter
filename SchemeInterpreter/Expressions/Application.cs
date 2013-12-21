@@ -17,7 +17,7 @@ namespace SchemeInterpreter
             var closure = Expressions[0].Eval(environment);
             if (!(closure is Closure))
                 throw new EvaluationException(closure,"Cannot apply to a non-closure");
-            return (closure as Closure).Apply(Expressions.Skip(1).ToList());
+            return (closure as Closure).Apply(environment,Expressions.Skip(1).ToList());
         }
     }
 }

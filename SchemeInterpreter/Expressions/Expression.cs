@@ -8,5 +8,12 @@ namespace SchemeInterpreter
     abstract class Expression
     {
         public abstract Value Eval(Environment environment);
+
+        internal Value AsValue()
+        {
+            if (this is Value)
+                return this as Value;
+            throw new UnevaluatedExpressionException(this);
+        }
     }
 }

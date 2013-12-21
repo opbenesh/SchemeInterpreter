@@ -34,15 +34,33 @@ namespace SchemeInterpreter
                 return false;
             bool escaped = false;
             int i;
-            for (i=0; i<str.Length && (escaped || str[i] != '"'); i++)
+            for (i = 0; i < str.Length && (escaped || str[i] != '"'); i++)
             {
                 if (str[i] == '\\')
                     escaped = !escaped;
             }
-            if(i==str.Length)
-                throw new ParseException(str,"A string must end in '\"'");
+            if (i == str.Length)
+                throw new ParseException(str, "A string must end in '\"'");
             value = new String() { Value = str.Substring(1, str.Length - 2) };
             return true;
+        }
+    }
+    class BooleanParser : ValueParser
+    {
+        public override bool TryParse(string str, out Value value)
+        {
+            value = null;
+            if (str == "#t")
+            {
+                value = new Boolean() { Value = true };
+                return true;
+            }
+            if (str == "#f")
+            {
+                value = new Boolean() { Value = false };
+                return true;
+            }
+            return false;
         }
     }
 }

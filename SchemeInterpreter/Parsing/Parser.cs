@@ -11,18 +11,19 @@ namespace SchemeInterpreter
         private static List<ValueParser> ValueParsers = new List<ValueParser>()
         {
             new IntegerParser(),
-            new StringParser()
+            new StringParser(),
+            new BooleanParser()
         };
 
         private static List<string> SpecialForms = new List<string>()
         {
-            "if","define"
+            "if","define","let","let*","lambda"
         };
 
         public static Expression ParseExpression(string expression)
         {
             expression = expression.Trim();
-            var captured = CaptureToken(expression);
+            var captured = Lexer.CaptureToken(expression);
             return ParseExpression(captured);
         }
 
@@ -30,7 +31,8 @@ namespace SchemeInterpreter
         {
             if (captured is SimpleToken)
                 return ParseSimpleToken(captured as SimpleToken);
-            return ParseSExpression(captured as SExpression);
+            var sExpression = captured as SExpression;
+            return ParseSExpression(sExpression);
         }
 
         private static Expression ParseSExpression(SExpression sExpression)
@@ -49,7 +51,7 @@ namespace SchemeInterpreter
                     throw new ParseException(sExpression.ToString(), "An \"if\" expression must contains exactly 3 arguments");
                 return new If(expressions[0], expressions[1], expressions[2]);
             }
-            if(specialForm=="define")
+            if (specialForm == "define")
             {
                 if (expressions.Count != 2)
                     throw new ParseException(sExpression.ToString(), "A \"define\" expression must contains exactly 2 arguments");
@@ -57,7 +59,39 @@ namespace SchemeInterpreter
                     throw new ParseException(sExpression.ToString(), "A \"define\" expression's first part must be either a string or a list");
 
                 return new Define(expressions[0], expressions[1]);
+            }
+            if (specialForm == "let" || specialForm=="let*")
+            {
+                if (expressions.Count != 2)
+                    throw new ParseException(sExpression.ToString(), string.Format("A \"{0}\" expression must contains exactly 2 arguments",specialForm));
+                if (!(expressions[0] is Application))
+                    throw new ParseException(sExpression.ToString(), string.Format("A \"{0}\" expression's first part must be a list",specialForm));
+                var tuples = new List<Tuple<Variable, Expression>>();
+                foreach (var expression in (expressions[0] as Application).Expressions)
+                {
+                    if (!(expression is Application && (expression as Application).Expressions.Length==2))
+                        throw new ParseException(sExpression.ToString(), string.Format("A \"{0}\" definition must be a two-element list", specialForm));
+                    var applcation = expression as Application;
+                    if (!(applcation.Expressions[0] is Variable))
+                        throw new ParseException(sExpression.ToString(), string.Format("A \"{0}\" definition must begin with a variable", specialForm));
+                    tuples.Add(new Tuple<Variable, Expression>(applcation.Expressions[0] as Variable, applcation.Expressions[1]));
+                }
+                if (specialForm == "let")
+                    return new Let(tuples, expressions[1]);
+                else if (specialForm == "let*")
+                    return new LetStar(tuples, expressions[1]);
 
+            }
+            if(specialForm=="lambda")
+            {
+                if (expressions.Count != 2)
+                    throw new ParseException(sExpression.ToString(), "A \"lambda\" expression must contains exactly 2 arguments");
+                if (!(expressions[0] is Application))
+                    throw new ParseException(sExpression.ToString(), "A \"lambda\" expression's first part must be a list");
+                var formalArgs = (expressions[0] as Application).Expressions;
+                if (formalArgs.Any(e => !(e is Variable)))
+                    throw new ParseException(sExpression.ToString(), "A \"lambda\" expression's first part must be a list of arguments");
+                return new Lambda((expressions[0] as Application).Expressions.Cast<Variable>().ToArray(), expressions[1]);
             }
             throw new InternalException(string.Format("Illegal special form {0}",specialForm));
         }
@@ -73,13 +107,6 @@ namespace SchemeInterpreter
                     return value;
             return new Variable(text);
         }
-        private static CapturedToken CaptureToken(string expression)
-        {
-            int index=0;
-            expression = expression.Trim();
-            return CaptureToken(expression, ref index);
-        }
-
         public static bool IsInputComplete(string input)
         {
             throw new NotImplementedException();
@@ -103,102 +130,11 @@ namespace SchemeInterpreter
             }
             return false;
         }
-        private static CapturedToken[] ExtractTokens(string str)
-        {
-            var tokens = new List<CapturedToken>();
-            for (int i = 0; i < str.Length; i++)
-            {
-                if(char.IsWhiteSpace(str[i]))
-                    continue;
-                tokens.Add(CaptureToken(str, ref i));
-            }
-            return tokens.ToArray();
-        }
-
-        private static CapturedToken CaptureToken(string str, ref int i)
-        {
-            if (str[i] == '"')
-                return CaptureStringToken(str, ref i);
-            if (str[i] == '(')
-                return CaptureSExpression(str, ref i);
-            return CaptureSimpleToken(str, ref i);
-        }
-
-        private static CapturedToken CaptureSimpleToken(string str, ref int i)
-        {
-            var sb = new StringBuilder();
-            for (; i < str.Length; i++)
-            {
-                if (char.IsWhiteSpace(str[i]))
-                    break;
-                sb.Append(str[i]);
-            }
-            return new SimpleToken(sb.ToString());
-        }
-
-        private static CapturedToken CaptureStringToken(string str, ref int index)
-        {
-            int init = index++;
-            bool escaped = false;
-            for (; escaped || str[index]!='"'; index++)
-            {
-                if (str[index] == '\\')
-                    escaped = !escaped;
-            }
-            return new SimpleToken(SliceString(str,init, index));
-        }
-        private static SExpression CaptureSExpression(string str, ref int index)
-        {
-            index++;
-            int parens = 1;
-            int init = index;
-            for (; parens > 0 && index < str.Length; index++)
-            {
-                if (str[index] == '(')
-                    parens++;
-                else if (str[index] == ')')
-                {
-                    if (parens == 0)
-                        throw new ParseException(SliceString(str, init, index), "Unmatched ')'");
-                    parens--;
-                }
-            }
-            if (parens > 0)
-                throw new ParseException(SliceString(str, init, index-1), "Unmatched '('");
-            return new SExpression(ExtractTokens(SliceString(str, init, index - 1)));
-        }
-
         private static string SliceString(string str, int start, int end)
         {
             return str.Substring(start, end - start);
         }
     }
 
-    abstract class CapturedToken
-    { }
-    class SimpleToken : CapturedToken
-    {
-        public string Value { get; private set; }
-        public SimpleToken(string str)
-        {
-            this.Value = str;
-        }
-        public override string ToString()
-        {
-            return Value;
-        }
-    }
-
-    class SExpression : CapturedToken
-    {
-        public CapturedToken[] Tokens { get; private set; }
-        public SExpression(CapturedToken[] tokens)
-        {
-            this.Tokens = tokens;
-        }
-        public override string ToString()
-        {
-            return string.Format("({0})", string.Join<CapturedToken>(" ", Tokens));
-        }
-    }
+    
 }

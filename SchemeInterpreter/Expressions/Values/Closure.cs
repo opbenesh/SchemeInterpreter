@@ -14,10 +14,10 @@ namespace SchemeInterpreter
             this._environment = environment;
             this._procedure = procedure;
         }
-        public Value Apply(List<Expression> args)
+        public Value Apply(Environment environment, List<Expression> args)
         {
             AssertProperArgsList(args);
-            var evaled = args.Select(e => e.Eval(_environment)).ToList();
+            var evaled = args.Select(e => e.Eval(environment)).ToList();
             var newEnv = new Environment(_environment);
             //newEnv[_procedureName] = _procedure;
             if(_procedure is UserDefinedProcedure)

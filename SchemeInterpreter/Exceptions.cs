@@ -28,6 +28,12 @@ namespace SchemeInterpreter
             : base(string.Format("Undeclared variable '{0}'", name))
         { }
     }
+    class UnevaluatedExpressionException : EvaluationException
+    {
+        public UnevaluatedExpressionException(Expression expr)
+            : base(string.Format("Cannot reference unevaluated expression '{0}'", expr))
+        { }
+    }
     class ParseException : InterpreterException
     {
         public ParseException(string str, string error)
@@ -48,7 +54,7 @@ namespace SchemeInterpreter
             : base(string.Format("Could not evaluate special form \"{0}\": {1}", specialForm, error))
         { }
     }
-    class TypeMismatchException : Exception
+    class TypeMismatchException : EvaluationException
     {
         public TypeMismatchException(Expression expr, Type expectedType)
             : base(string.Format("Type mismatch: expected: {0}\n found: {1}\n in expression {2}", expr.GetType(), expectedType, expr))
