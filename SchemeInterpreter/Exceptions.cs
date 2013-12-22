@@ -35,6 +35,12 @@ namespace SchemeInterpreter
             : base(string.Format("Cannot reference unevaluated expression '{0}'", expr))
         { }
     }
+    class SpecialTokenEvaluationException : EvaluationException
+    {
+        public SpecialTokenEvaluationException(SpecialToken token)
+            : base(string.Format("Special token '{0}' evaluated out of context", token))
+        { }
+    }
     class ParseException : InterpreterException
     {
         public ParseException(string str, string error)
@@ -60,5 +66,10 @@ namespace SchemeInterpreter
         public TypeMismatchException(Expression expr, Type expectedType)
             : base(string.Format("Type mismatch: expected: {0}\n found: {1}\n in expression {2}", expr.GetType(), expectedType, expr))
         { }
+    }
+    class NativeSchemeException : InterpreterException
+    {
+        public NativeSchemeException() { }
+        public NativeSchemeException(string message) : base(message) { }
     }
 }

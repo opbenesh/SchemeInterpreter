@@ -27,14 +27,17 @@ namespace SchemeInterpreter
                 DefineVariable(environment);
             else if (DefinedName is Application)
                 DefineProcedure(environment);
-            return new PrimitiveWrapper<bool>() { Value = false };
+            return Void.Instance;
         }
 
         private void DefineProcedure(Environment environment)
         {
-            var expressions = (DefinedName as Application).Expressions;
+            var expressions = (DefinedName as Application).Expressions.ToList();
             var procName = (expressions[0] as Variable).Name;
-            var proc = new UserDefinedProcedure(DefinedValue, false, expressions.Skip(1).Select(v => (v as Variable).Name).ToList());
+            var isVariadic = expressions.Count>2 && expressions[expressions.Count-2] is SpecialToken && (expressions[expressions.Count-2] as SpecialToken).Token == ".";
+            if(isVariadic)
+                expressions.RemoveAt(expressions.Count-2);
+            var proc = new UserDefinedProcedure(DefinedValue, isVariadic, expressions.Skip(1).Select(v => (v as Variable).Name).ToList());
             var closure = new Closure(environment, proc);
             environment[procName] = closure;
         }

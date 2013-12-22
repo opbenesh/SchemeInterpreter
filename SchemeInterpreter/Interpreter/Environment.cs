@@ -43,8 +43,6 @@ namespace SchemeInterpreter
 
     class TopLevelEnvironment:Environment
     {
-        private Environment environment;
-
         public TopLevelEnvironment(Environment environment)
             :base(environment)
         {

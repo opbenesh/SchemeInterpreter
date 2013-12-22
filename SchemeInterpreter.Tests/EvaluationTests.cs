@@ -1,30 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SchemeInterpreter;
+using System.IO;
 
 namespace SchemeInterpreter.Tests
 {
     [TestClass]
-    public class EvaluationTests
+    public class EvaluationTests : TestsBase
     {
-        public EvaluationTests()
-        {
-            Runtime.InitializeTopLevelEnvironment();
-        }
-        [TestMethod]
-        public void TestDefineVariable()
-        {
-            var runtime = new Runtime();
-            runtime.Execute("(define a 1)");
-            Assert.IsTrue(runtime.Execute("a").Equals(new PrimitiveWrapper<int>() { Value = 1 }));
-        }
-        [TestMethod]
-        public void TestDefineProcedure()
-        {
-            var runtime = new Runtime();
-            runtime.Execute("(define (f x) (+ x x))");
-            Assert.IsTrue(runtime.Execute("(f 1)").Equals(new PrimitiveWrapper<int>() { Value = 2 }));
-        }
         [TestMethod]
         public void TestCons()
         {
@@ -34,11 +17,14 @@ namespace SchemeInterpreter.Tests
             Assert.IsTrue(runtime.Execute("(cdr cell)").Equals(new PrimitiveWrapper<int>() { Value = 2 }));
         }
         [TestMethod]
-        public void TestIf()
+        public void TestMutation()
         {
             var runtime = new Runtime();
-            Assert.IsTrue(runtime.Execute("(if #t 1 2)").Equals(new PrimitiveWrapper<int>() { Value = 1 }));
-            Assert.IsTrue(runtime.Execute("(if #f 1 2)").Equals(new PrimitiveWrapper<int>() { Value = 2 }));
+            runtime.Execute("(define cell (cons 1 2))");
+            runtime.Execute("(set-car! cell 2)");
+            runtime.Execute("(set-cdr! cell 1)");
+            Assert.IsTrue(runtime.Execute("(car cell)").Equals(new PrimitiveWrapper<int>() { Value = 2 }));
+            Assert.IsTrue(runtime.Execute("(cdr cell)").Equals(new PrimitiveWrapper<int>() { Value = 1 }));
         }
         [TestMethod]
         public void TestRecursion()
@@ -48,23 +34,17 @@ namespace SchemeInterpreter.Tests
             Assert.IsTrue(runtime.Execute("(fact 5)").Equals(new PrimitiveWrapper<int>() { Value = 120 }));
         }
         [TestMethod]
-        public void TestLet()
+        public void TestVariadic()
         {
             var runtime = new Runtime();
-            Assert.IsTrue(runtime.Execute("(let ((x 1)) x)").Equals(new PrimitiveWrapper<int>() { Value = 1 }));
-            Assert.IsTrue(runtime.Execute("(let ((x 1)) (let ((x 2) (y x)) y))").Equals(new PrimitiveWrapper<int>() { Value =1 }));
+            runtime.Execute("(define (first . xs) (car xs))");
+            Assert.IsTrue(runtime.Execute("(first 1 2 3)").Equals(new PrimitiveWrapper<int>() { Value = 1 }));
         }
         [TestMethod]
-        public void TestLetStar()
+        public void TestApply()
         {
             var runtime = new Runtime();
-            Assert.IsTrue(runtime.Execute("(let ((x 1)) (let* ((x 2) (y x)) y))").Equals(new PrimitiveWrapper<int>() { Value = 2 }));
-        }
-        [TestMethod]
-        public void TestLambda()
-        {
-            var runtime = new Runtime();
-            Assert.IsTrue(runtime.Execute("((lambda (x) (+ x x)) 2)").Equals(new PrimitiveWrapper<int>() { Value = 4 }));
+            Assert.IsTrue(runtime.Execute("(apply + (list 1 2 3))").Equals(new PrimitiveWrapper<int>() { Value = 6 }));
         }
     }
 }

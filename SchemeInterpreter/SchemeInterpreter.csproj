@@ -42,10 +42,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Expressions\Application.cs" />
+    <Compile Include="Expressions\Special Forms\Begin.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Expressions\Special Forms\Lambda.cs" />
     <Compile Include="Expressions\Special Forms\Let.cs" />
+    <Compile Include="Expressions\SpecialToken.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Expressions\Values\Closure.cs" />
     <Compile Include="Expressions\Special Forms\Define.cs" />
+    <Compile Include="Expressions\Values\SpecialValues.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Expressions\Values\Symbol.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interpreter\Environment.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Expressions\Expression.cs" />
@@ -59,7 +71,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interpreter\Runtime.cs" />
     <Compile Include="Expressions\Special Forms\SpecialForm.cs" />
-    <Compile Include="Expressions\SpecialFormToken.cs" />
     <Compile Include="ValueParser.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Expressions\Values\Value.cs" />
@@ -70,7 +81,6 @@
     <None Include="Scheme\init.scm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Scheme\meta-eval.scm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -10,6 +10,20 @@ namespace SchemeInterpreter
         public abstract bool TryParse(string str, out Value value);
     }
 
+    class SymbolParser : ValueParser
+    {
+        public override bool TryParse(string str, out Value value)
+        {
+            value = null;
+            if (str[0] == '\'' && str.Length > 1 && str.LastIndexOf('\'') == 0)
+            {
+                value = new Symbol(str.Substring(1));
+                return true;
+            }
+            return false;
+        }
+    }
+
     class IntegerParser : ValueParser
     {
         public override bool TryParse(string str, out Value value)
@@ -41,7 +55,7 @@ namespace SchemeInterpreter
             }
             if (i == str.Length)
                 throw new ParseException(str, "A string must end in '\"'");
-            value = new PrimitiveWrapper<string>() { Value = str.Substring(1, str.Length - 2) };
+            value = new PrimitiveWrapper<string>() { Value = str.Substring(1, str.Length - 1) };
             return true;
         }
     }
@@ -50,12 +64,12 @@ namespace SchemeInterpreter
         public override bool TryParse(string str, out Value value)
         {
             value = null;
-            if (str == "#t")
+            if (str == "#t" || str=="true")
             {
                 value = new PrimitiveWrapper<bool>() { Value = true };
                 return true;
             }
-            if (str == "#f")
+            if (str == "#f" || str=="false")
             {
                 value = new PrimitiveWrapper<bool>() { Value = false };
                 return true;

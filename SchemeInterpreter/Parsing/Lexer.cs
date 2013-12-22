@@ -90,8 +90,8 @@ namespace SchemeInterpreter
                 }
             }
             if (parens > 0)
-                throw new ParseException(SliceString(str, init, index-1), "Unmatched '('");
-            var tokens = ExtractTokens(SliceString(str, init, index - 1));
+                throw new ParseException(SliceString(str, init, index), "Unmatched '('");
+            var tokens = ExtractTokens(SliceString(str, init, index-1));
             return new SExpression(tokens);
         }
 

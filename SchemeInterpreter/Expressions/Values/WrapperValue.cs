@@ -5,7 +5,8 @@ using System.Text;
 
 namespace SchemeInterpreter
 {
-    class PrimitiveWrapper<T>:Value
+    abstract class PrimitiveWrapper : Value { }
+    class PrimitiveWrapper<T> : PrimitiveWrapper
     {
         public T Value { get; set; }
         public override string ToString()

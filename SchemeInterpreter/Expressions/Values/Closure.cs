@@ -16,13 +16,20 @@ namespace SchemeInterpreter
         }
         public Value Apply(Environment environment, List<Expression> args)
         {
-            AssertProperArgsList(args);
+            AssertProperArgsCount(args.Count);
             var evaled = args.Select(e => e.Eval(environment)).ToList();
             var newEnv = new Environment(_environment);
-            //newEnv[_procedureName] = _procedure;
-            if(_procedure is UserDefinedProcedure)
+            if (_procedure is UserDefinedProcedure)
                 AddArgsToEnvironment((_procedure as UserDefinedProcedure).FormalArgs, evaled, newEnv);
             return _procedure.Apply(evaled, newEnv);
+        }
+        public Value Apply(List<Value> args)
+        {
+            AssertProperArgsCount(args.Count);
+            var newEnv = new Environment(_environment);
+            if (_procedure is UserDefinedProcedure)
+                AddArgsToEnvironment((_procedure as UserDefinedProcedure).FormalArgs, args, newEnv);
+            return _procedure.Apply(args, newEnv);
         }
 
         private void AddArgsToEnvironment(List<string> formal, List<Value> evaled, Environment environment)
@@ -39,18 +46,22 @@ namespace SchemeInterpreter
                 environment[formal.Last()] = evaled.Last();
         }
 
-        private void AssertProperArgsList(List<Expression> actual)
+        private void AssertProperArgsCount(int argCount)
         {
             if (!_procedure.IsLastArgList)
             {
-                if (_procedure.ArgumentCount != actual.Count)
-                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, actual.Count);
+                if (_procedure.ArgumentCount != argCount)
+                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, argCount);
             }
             else
             {
-                if (actual.Count < _procedure.ArgumentCount - 1)
-                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, actual.Count);
+                if (argCount < _procedure.ArgumentCount - 1)
+                    throw new InvalidArgumentCountException(_procedure.ArgumentCount, argCount);
             }
+        }
+        public override string ToString()
+        {
+            return "#<procedure>";
         }
     }
 }

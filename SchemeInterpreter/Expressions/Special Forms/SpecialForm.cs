@@ -12,5 +12,9 @@ namespace SchemeInterpreter
         {
             get { return GetName(); } 
         }
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

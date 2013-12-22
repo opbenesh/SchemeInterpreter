@@ -9,23 +9,18 @@ namespace SchemeInterpreter
     {
         public static Pair ToSchemeList(IEnumerable<Expression> list)
         {
-            var result = new Pair(null, null);
-            var current = result;
-            foreach (var expr in list)
-            {
-                current.Cdr = new Pair(expr, null);
-                current = (Pair)current.Cdr;
-            }
-            return result;
+            if (!list.Any())
+                throw new InternalException("Cannot create a scheme list from an empty list");
+            return list.Reverse().Skip(1).Aggregate(new Pair(list.Last(),Null.Instance),(acc, x) => new Pair(x, acc));
         }
         public static List<T> ToList<T>(Pair list) where T : Expression
         {
             var result = new List<T>();
-            for (Pair current = list; current!=null ; current=current.Cdr as Pair)
+            for (Expression current = list; !(current is Null) ; current=(current as Pair).Cdr)
             {
-                if (!(current.Car is T))
-                    throw new TypeMismatchException(current.Car, typeof(T));
-                result.Add(current.Car as T);
+                if (!((current as Pair).Car is T))
+                    throw new TypeMismatchException((current as Pair).Car, typeof(T));
+                result.Add((current as Pair).Car as T);
             }
             return result;
         }

@@ -31,7 +31,7 @@ namespace SchemeInterpreter
 
         private bool IsProperList()
         {
-            return Cdr == null || (Cdr is Pair && (Cdr as Pair).IsProperList());
+            return Cdr is Null || (Cdr is Pair && (Cdr as Pair).IsProperList());
         }
     }
 }

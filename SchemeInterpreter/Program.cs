@@ -19,7 +19,10 @@ namespace SchemeInterpreter
                 return;
             }
             var runtime = new Runtime();
-            runtime.Repl();
+            if (args.Length == 1)
+                runtime.ExecuteFile(args[0]);
+            else
+                runtime.Repl();
         }
     }
 }
