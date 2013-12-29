@@ -1,4 +1,6 @@
-A simple Scheme Interpreter written in C#.
+SchemeInterpreter - A simple Scheme Interpreter written in C#
+------------------------------------------------------------
+
 
 Features:
 
@@ -8,4 +10,4 @@ Features:
 + Delayed evaluation
 
 
-Tested on the SICP metacircular-evaluator
+Tested on the SICP metacircular-evaluator!
