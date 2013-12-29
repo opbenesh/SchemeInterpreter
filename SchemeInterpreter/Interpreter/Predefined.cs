@@ -46,8 +46,16 @@ namespace SchemeInterpreter
 
             new PrimitiveProcedure("read",Read,0),
 
-            new PrimitiveProcedure("error",WrapVoid(vl=>Error(vl)),1,true)
+            new PrimitiveProcedure("error",WrapVoid(vl=>Error(vl)),1,true),
+
+            new PrimitiveProcedure("force",Force,1)
         };
+
+        private static Value Force(List<Value> arg, Environment environment)
+        {
+            var promise = arg.Single().SafeCastAs<Promise>();
+            return promise.Force(environment);
+        }
 
         private static Value Eqv(List<Value> vl)
         {

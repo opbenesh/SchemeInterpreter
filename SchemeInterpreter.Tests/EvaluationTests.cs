@@ -46,5 +46,13 @@ namespace SchemeInterpreter.Tests
             var runtime = new Runtime();
             Assert.IsTrue(runtime.Execute("(apply + (list 1 2 3))").Equals(new PrimitiveWrapper<int>() { Value = 6 }));
         }
+        [TestMethod]
+        public void TestTailCallOptimization()
+        {
+            int benchmark = 10000;
+            var runtime = new Runtime();
+            runtime.Execute("(define (f n) (if (= n 0) #t (f (- n 1))))");
+            runtime.Execute(string.Format("(f {0})",benchmark));
+        }
     }
 }

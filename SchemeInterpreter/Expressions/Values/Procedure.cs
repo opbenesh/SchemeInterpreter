@@ -35,8 +35,14 @@ namespace SchemeInterpreter
     class PrimitiveProcedure : Procedure
     {
         public string Name { get; private set; }
-        private Func<List<Value>, Value> _inner;
-        public PrimitiveProcedure(string name, Func<List<Value>, Value> function, int argCount, bool isLastArgList=false)
+        private Func<List<Value>, Environment, Value> _inner;
+        public PrimitiveProcedure(string name, Func<List<Value>, Value> function, int argCount, bool isLastArgList = false)
+            : base(isLastArgList, argCount)
+        {
+            this.Name = name;
+            this._inner = (vl,env)=>function(vl);
+        }
+        public PrimitiveProcedure(string name, Func<List<Value>, Environment, Value> function, int argCount, bool isLastArgList = false)
             : base(isLastArgList, argCount)
         {
             this.Name = name;
@@ -44,7 +50,7 @@ namespace SchemeInterpreter
         }
         public override Value Apply(List<Value> args, Environment environment)
         {
-            return _inner(args);
+            return _inner(args,environment);
         }
     }
 }

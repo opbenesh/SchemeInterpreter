@@ -21,7 +21,7 @@ namespace SchemeInterpreter
 
         private static List<string> SpecialForms = new List<string>()
         {
-            "if","define","let","let*","lambda","begin", "cond"
+            "if","define","let","let*","lambda","begin", "cond", "delay"
         };
 
         public static Expression ParseExpression(string expression)
@@ -125,6 +125,11 @@ namespace SchemeInterpreter
                 return expressions.Cast<Application>().Reverse().Skip(1)
                     .Aggregate(accIf,(acc,x)=>new If(x.Expressions[0],x.Expressions[1],acc));
 
+            }
+            if(specialForm=="delay")
+            {
+                var expr = expressions.Single();
+                return new Promise(expr);
             }
             throw new InternalException(string.Format("Illegal special form {0}",specialForm));
         }

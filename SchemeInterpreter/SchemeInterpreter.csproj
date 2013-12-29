@@ -55,6 +55,7 @@
     <Compile Include="Expressions\Values\SpecialValues.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Expressions\Values\Promise.cs" />
     <Compile Include="Expressions\Values\Symbol.cs">
       <SubType>Code</SubType>
     </Compile>
