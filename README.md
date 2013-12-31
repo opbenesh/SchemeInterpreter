@@ -8,7 +8,7 @@ Features:
 + Scheme primitives
 + Let and Let*
 + Lexical scope and lambda expressions
-+ Delayed evaluation
++ Delayed evaluation with "delay" and "force"
 
 
 Tested on the SICP metacircular-evaluator!
